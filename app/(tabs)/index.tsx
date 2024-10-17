@@ -5,6 +5,7 @@ import ActionItems from '@/components/ActionItems';
 import Notes from '@/components/Notes';
 import { StyleSheet } from 'react-native';
 import { Calendar } from '@/components/Calendar';
+import Challenges from '@/components/Challenges';
 
 export default function HomeScreen() {
 
@@ -16,6 +17,7 @@ export default function HomeScreen() {
         <Calendar currentDay={16} currentMonth={10} currentYear={2024}/>
       </ThemedView>
       <ActionItems />
+      <Challenges/>
       <Notes />
       </ParallaxScrollView>
   );
