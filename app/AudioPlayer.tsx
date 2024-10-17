@@ -1,5 +1,5 @@
 // AudioPlayer.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
@@ -30,7 +30,9 @@ export default function AudioPlayerScreen() {
   const index = parseInt(itemIndex, 10);
   const item = actionItems[index];
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  // Use useRef to store the sound object
+  const soundRef = useRef<Audio.Sound | null>(null);
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(1);
@@ -59,20 +61,21 @@ export default function AudioPlayerScreen() {
     prepareAudio();
 
     return () => {
-      if (sound) {
-        sound.unloadAsync();
+      // Unload the sound when the component unmounts
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
       }
     };
   }, []);
 
   const loadSound = async () => {
     try {
-      const { sound: newSound } = await Audio.Sound.createAsync(item.audioFile, {
+      const { sound } = await Audio.Sound.createAsync(item.audioFile, {
         shouldPlay: true,
       });
-      setSound(newSound);
+      soundRef.current = sound;
 
-      newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     } catch (error) {
       console.error('Error loading sound:', error);
     }
@@ -92,33 +95,35 @@ export default function AudioPlayerScreen() {
   };
 
   const handlePlayPause = async () => {
-    if (isPlaying) {
-      await sound?.pauseAsync();
-    } else {
-      await sound?.playAsync();
+    if (soundRef.current) {
+      if (isPlaying) {
+        await soundRef.current.pauseAsync();
+      } else {
+        await soundRef.current.playAsync();
+      }
+      // Remove manual state update; rely on onPlaybackStatusUpdate
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleSeek = async (value: number) => {
-    if (sound) {
-      await sound.setPositionAsync(value);
+    if (soundRef.current) {
+      await soundRef.current.setPositionAsync(value);
     }
   };
 
   const handleForward = async () => {
-    if (sound) {
+    if (soundRef.current) {
       let newPosition = progress + 10000; // forward 10s
       if (newPosition > duration) newPosition = duration;
-      await sound.setPositionAsync(newPosition);
+      await soundRef.current.setPositionAsync(newPosition);
     }
   };
 
   const handleBackward = async () => {
-    if (sound) {
+    if (soundRef.current) {
       let newPosition = progress - 10000; // backward 10s
       if (newPosition < 0) newPosition = 0;
-      await sound.setPositionAsync(newPosition);
+      await soundRef.current.setPositionAsync(newPosition);
     }
   };
 
