@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { NotesContext } from '../NotesContext';
+import { NotesContext } from '../NotesContext'; // Adjust the path as necessary
 
 interface NoteProps {
   id: string;
@@ -13,7 +13,13 @@ interface NoteProps {
   isFavorite: boolean;
 }
 
-const Note: React.FC<{ note: NoteProps; onToggleFavorite: () => void }> = ({ note, onToggleFavorite }) => (
+interface NoteComponentProps {
+  note: NoteProps;
+  onToggleFavorite: () => void;
+  onEdit: () => void;
+}
+
+const Note: React.FC<NoteComponentProps> = ({ note, onToggleFavorite, onEdit }) => (
   <View style={styles.noteContainer}>
     <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
     <Text style={styles.noteContent} numberOfLines={3}>{note.content}</Text>
@@ -27,44 +33,84 @@ const Note: React.FC<{ note: NoteProps; onToggleFavorite: () => void }> = ({ not
             color={note.isFavorite ? '#FFD700' : '#CCCCCC'}
           />
         </TouchableOpacity>
-        <Ionicons name="ellipsis-horizontal" size={20} color="#000000" style={styles.moreIcon} />
+        <TouchableOpacity onPress={onEdit}>
+          <Ionicons name="ellipsis-horizontal" size={20} color="#000000" style={styles.moreIcon} />
+        </TouchableOpacity>
       </View>
     </View>
   </View>
 );
 
 const Notes: React.FC = () => {
-  const { notes, addNote, toggleFavorite } = useContext(NotesContext);
+  const { notes, addNote, toggleFavorite, updateNote } = useContext(NotesContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newNoteTitle, setNewNoteTitle] = useState('');
-  const [newNoteContent, setNewNoteContent] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentNote, setCurrentNote] = useState<NoteProps | null>(null);
+  const [noteTitle, setNoteTitle] = useState('');
+  const [noteContent, setNoteContent] = useState('');
 
   const router = useRouter();
 
   const handleAddNote = () => {
+    setIsEditing(false);
+    setCurrentNote(null);
+    setNoteTitle('');
+    setNoteContent('');
+    setModalVisible(true);
+  };
+
+  const handleEditNote = (note: NoteProps) => {
+    setIsEditing(true);
+    setCurrentNote(note);
+    setNoteTitle(note.title);
+    setNoteContent(note.content);
     setModalVisible(true);
   };
 
   const saveNote = () => {
-    if (newNoteTitle.trim() && newNoteContent.trim()) {
-      const newNote: NoteProps = {
-        id: Date.now().toString(),
-        title: newNoteTitle.trim(),
-        content: newNoteContent.trim(),
-        time: new Date(),
-        isFavorite: false,
-      };
-      addNote(newNote);
-      setNewNoteTitle('');
-      setNewNoteContent('');
+    if (noteTitle.trim() && noteContent.trim()) {
+      if (isEditing && currentNote) {
+        // Update existing note
+        const updatedNote: NoteProps = {
+          ...currentNote,
+          title: noteTitle.trim(),
+          content: noteContent.trim(),
+          time: new Date(),
+        };
+        updateNote(updatedNote);
+      } else {
+        // Add new note
+        const newNote: NoteProps = {
+          id: Date.now().toString(),
+          title: noteTitle.trim(),
+          content: noteContent.trim(),
+          time: new Date(),
+          isFavorite: false,
+        };
+        addNote(newNote);
+      }
+      // Reset state and close modal
+      setCurrentNote(null);
+      setNoteTitle('');
+      setNoteContent('');
+      setIsEditing(false);
       setModalVisible(false);
     } else {
       alert('Please enter both title and content.');
     }
   };
 
+  const closeModal = () => {
+    setModalVisible(false);
+    setIsEditing(false);
+    setCurrentNote(null);
+    setNoteTitle('');
+    setNoteContent('');
+  };
+
   // Sort and limit notes
   const sortedNotes = notes
+    .slice() // Create a shallow copy to avoid mutating the original array
     .sort((a, b) => {
       if (a.isFavorite !== b.isFavorite) {
         return a.isFavorite ? -1 : 1;
@@ -77,7 +123,7 @@ const Notes: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Notes</Text>
-        <TouchableOpacity onPress={() => router.push('../AllNotes')}>
+        <TouchableOpacity onPress={() => router.push('/AllNotes')}>
           <Text style={styles.seeAll}>See all notes</Text>
         </TouchableOpacity>
       </View>
@@ -90,33 +136,34 @@ const Notes: React.FC = () => {
             key={note.id}
             note={note}
             onToggleFavorite={() => toggleFavorite(note.id)}
+            onEdit={() => handleEditNote(note)}
           />
         ))}
       </View>
 
-      {/* Add Note Modal */}
+      {/* Add/Edit Note Modal */}
       <Modal visible={modalVisible} animationType="slide">
         <ScrollView contentContainerStyle={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Add Note</Text>
+          <Text style={styles.modalTitle}>{isEditing ? 'Edit Note' : 'Add Note'}</Text>
           <TextInput
             style={styles.input}
             placeholder="Title"
-            value={newNoteTitle}
-            onChangeText={setNewNoteTitle}
+            value={noteTitle}
+            onChangeText={setNoteTitle}
           />
           <TextInput
             style={[styles.input, styles.textArea]}
             placeholder="Content"
-            value={newNoteContent}
-            onChangeText={setNewNoteContent}
+            value={noteContent}
+            onChangeText={setNoteContent}
             multiline
           />
           <TouchableOpacity style={styles.saveButton} onPress={saveNote}>
-            <Text style={styles.saveButtonText}>Save</Text>
+            <Text style={styles.saveButtonText}>{isEditing ? 'Save Changes' : 'Save'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cancelButton}
-            onPress={() => setModalVisible(false)}
+            onPress={closeModal}
           >
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
@@ -235,7 +282,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#323232',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
