@@ -30,3 +30,11 @@ With that in mind, I would add notetaking to just about every part of the app, m
 
  ## Links to work
  [My personal AI assistant (tutorial elsewhere on YT channel)](https://www.youtube.com/watch?v=PnOhU7dLNQg)
+ - I often wonder about word definitions or historical context for books I'm reading, and find that asking Siri sucks and going on my phone to look it up distracts me from the book. So, I made a raspberry pi voice assistant to ask these questions. I also added the ability for it to add notes and random thoughts while I read to a [Notion document](https://x.com/aidankanesxacc/status/1845566552080302551)
+
+ [Awefactor](https://awefactor.us)
+ - Hearing an Andrew Huberman episode where he says seeing inspiring and beautiful things makes your attention more keen to seeing other good things, and vice versa for gross things opening your vision to bad things, I figured it'd make sense to create a one-a-day inspiration engine. I've got over 70 users on the website and am working on a swift mobile app for a class which I'll continue after I hit the assignment out of the park.
+
+ [Kane Web Services](https://aidanpkane.com/public/website-projects.html)
+ - Making websites and web scraping for lead generation. 
+ - On that website's software projects page is a demo for a chrome extension I made, took off the store, but still use locally to get quick answers from articles I find when headlines catch my eye.
