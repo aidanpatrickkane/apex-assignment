@@ -1,4 +1,3 @@
-// AudioPlayer.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,7 +5,6 @@ import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Audio, AVPlaybackStatus, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 
-// Use relative paths
 const actionItems = [
   {
     image: require('../assets/images/apple-logo.png'),
@@ -30,7 +28,7 @@ export default function AudioPlayerScreen() {
   const index = parseInt(itemIndex, 10);
   const item = actionItems[index];
 
-  // Use useRef to store the sound object
+  // storing sound object
   const soundRef = useRef<Audio.Sound | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(true);
@@ -41,7 +39,7 @@ export default function AudioPlayerScreen() {
   useEffect(() => {
     const prepareAudio = async () => {
       try {
-        // Set audio mode
+        // setting audio mode
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
           playsInSilentModeIOS: true,
@@ -61,7 +59,6 @@ export default function AudioPlayerScreen() {
     prepareAudio();
 
     return () => {
-      // Unload the sound when the component unmounts
       if (soundRef.current) {
         soundRef.current.unloadAsync();
       }
@@ -101,7 +98,6 @@ export default function AudioPlayerScreen() {
       } else {
         await soundRef.current.playAsync();
       }
-      // Remove manual state update; rely on onPlaybackStatusUpdate
     }
   };
 
@@ -121,7 +117,7 @@ export default function AudioPlayerScreen() {
 
   const handleBackward = async () => {
     if (soundRef.current) {
-      let newPosition = progress - 10000; // backward 10s
+      let newPosition = progress - 10000;
       if (newPosition < 0) newPosition = 0;
       await soundRef.current.setPositionAsync(newPosition);
     }

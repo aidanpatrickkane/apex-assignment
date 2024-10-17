@@ -1,9 +1,8 @@
-// Notes.tsx
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { NotesContext } from '../NotesContext'; // Adjust the path as necessary
+import { NotesContext } from '../NotesContext';
 
 interface NoteProps {
   id: string;
@@ -70,7 +69,7 @@ const Notes: React.FC = () => {
   const saveNote = () => {
     if (noteTitle.trim() && noteContent.trim()) {
       if (isEditing && currentNote) {
-        // Update existing note
+        // updating existing note
         const updatedNote: NoteProps = {
           ...currentNote,
           title: noteTitle.trim(),
@@ -79,7 +78,7 @@ const Notes: React.FC = () => {
         };
         updateNote(updatedNote);
       } else {
-        // Add new note
+        // add new note
         const newNote: NoteProps = {
           id: Date.now().toString(),
           title: noteTitle.trim(),
@@ -89,7 +88,7 @@ const Notes: React.FC = () => {
         };
         addNote(newNote);
       }
-      // Reset state and close modal
+      // reset state and close modal
       setCurrentNote(null);
       setNoteTitle('');
       setNoteContent('');
@@ -108,9 +107,9 @@ const Notes: React.FC = () => {
     setNoteContent('');
   };
 
-  // Sort and limit notes
+  // sorting and limit notes
   const sortedNotes = notes
-    .slice() // Create a shallow copy to avoid mutating the original array
+    .slice()
     .sort((a, b) => {
       if (a.isFavorite !== b.isFavorite) {
         return a.isFavorite ? -1 : 1;
@@ -141,7 +140,7 @@ const Notes: React.FC = () => {
         ))}
       </View>
 
-      {/* Add/Edit Note Modal */}
+      {/* add/edit note modal */}
       <Modal visible={modalVisible} animationType="slide">
         <ScrollView contentContainerStyle={styles.modalContainer}>
           <Text style={styles.modalTitle}>{isEditing ? 'Edit Note' : 'Add Note'}</Text>
@@ -173,7 +172,7 @@ const Notes: React.FC = () => {
   );
 };
 
-// Helper function to format time ago
+// formatting time ago
 const formatTimeAgo = (time: Date) => {
   const now = new Date();
   const diff = Math.floor((now.getTime() - time.getTime()) / 1000); // in seconds

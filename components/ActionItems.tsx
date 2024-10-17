@@ -1,10 +1,8 @@
-// ActionItems.tsx
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import ActionItem from './ActionItem';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-// Use relative paths
 const actionItems = [
   {
     image: require('@/assets/images/apple-logo.png'),

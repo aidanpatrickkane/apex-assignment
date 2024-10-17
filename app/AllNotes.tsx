@@ -1,4 +1,3 @@
-// app/AllNotes.tsx
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -91,7 +90,7 @@ const AllNotes: React.FC = () => {
         contentContainerStyle={styles.listContent}
       />
 
-      {/* Edit Note Modal */}
+      {/* edit note modal */}
       <Modal visible={editModalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Edit Note</Text>
@@ -123,7 +122,7 @@ const AllNotes: React.FC = () => {
   );
 };
 
-// Helper function to format time ago
+// for formatting time ago on each note
 const formatTimeAgo = (time: Date) => {
   const now = new Date();
   const diff = Math.floor((now.getTime() - time.getTime()) / 1000); // in seconds

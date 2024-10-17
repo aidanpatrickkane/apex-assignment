@@ -1,4 +1,3 @@
-// components/NotesContext.tsx
 import React, { createContext, useState, ReactNode } from 'react';
 
 interface NoteProps {
