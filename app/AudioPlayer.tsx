@@ -15,10 +15,10 @@ const actionItems = [
     audioFile: require('../assets/audio/think-different-jobs.mp3'),
   },
   {
-    image: require('../assets/images/apple-logo.png'),
-    title: 'How to Improve Your Focus',
-    subtitle: '5 minutes - Lesson',
-    audioFile: require('../assets/audio/think-different-jobs.mp3'),
+    image: require('../assets/images/if-logo.png'),
+    title: 'If --',
+    subtitle: '2 minute listen',
+    audioFile: require('../assets/audio/if-rk-lf.mp3'),
   },
 ];
 
@@ -181,7 +181,7 @@ export default function AudioPlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 180,
     alignItems: 'center',
     backgroundColor: '#fff',
   },

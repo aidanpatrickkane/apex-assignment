@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flexDirection: 'column',
     gap: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
 });
