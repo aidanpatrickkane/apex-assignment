@@ -1,50 +1,32 @@
-# Welcome to your Expo app 👋
+# My Apex Assignment
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## My approach to the assignment
 
-## Get started
+I wrote down in a Notion document going from top to bottom of the Figma file, writing out what components I would make based on the design. After I identified and took note of a component, I briefly jotted down some bullet points for the imagined design and logic required for it.
 
-1. Install dependencies
+When I finished this, I got to work in VSCode, reading react native documentation and using ChatGPT when a component required something beyond what I could pull off the top of my head. I've also found Perplexity is awesome at referencing documentation accurately if I ever had trouble navigating.
 
-   ```bash
-   npm install
-   ```
+I wanted to make sure I had fun making it, since this is a type of app I wish existed in better forms, so a lot of the functionality was built to reflect how I'd use an app like this.
 
-2. Start the app
+## Additional tools and libraries used
 
-   ```bash
-    npx expo start
-   ```
+Just Figma for some minor design planning and ChatGPT to ask questions about how I could go about building an unfamiliar piece of a component. I've tried Cursor, but I find no matter what, I eventually find myself in the inevitable position where I've zoned out, accepted the last 4 changes, something goes wrong, and I realize I have no idea why.
 
-In the output, you'll find options to open the app in a
+ChatGPT is better for making deliberate, incremental progress, which I strived for here.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+##  How I structured the project
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+I structured the project using Expo and Expo Router, which I find to be easiest to set up and build a clean navigation hierarchy on. Starting at the index.tsx root, I made numerous components and screens to communicate so that the code didn't get too jumbled up and bugs were easy to locate.
 
-## Get a fresh project
+The navigation is through a stack navigator, connecting the Today screen with screens like AudioPlayer and AllNotes. I made sure to use the context API for the notes section to make sure they stayed when the user navigated to other screens.
 
-When you're ready, run:
+## Further improving app design and functionality
 
-```bash
-npm run reset-project
-```
+One of my biggest personal beliefs is in the need for writing thoughts and ideas down incessantly, then reflecting on them later that night. I also think writing about experiences helps you think deeper about them and appreciate what resonates with you. 
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+With that in mind, I would add notetaking to just about every part of the app, maybe through a little white block always on the top left of the screen, then a reflection alarm set by the user for the same time every night where they re-read everything they wrote that day and then have a free-write. Then, the app blocks each day's entire writing into its own, easily accessible area for the user to look back on. It could also be accessed from a database by an AI assistant that uses them to spontaneously surprise you when an opportunity arises. For example, it would be cool if two months ago, someone wrote in a note "feeling chubby and can't seem to get this extra weight off," and today they wrote "really looked like a beast in the gym today", prompting a background assistant to pull up that old note they forgot about.
 
-## Learn more
+ Another idea I had was adding a notetaking reflection option for the audio meditations, so users of the app can, through just writing, figure out what they like and don't like about the content, and hopefully learn more about what personally resonates with them. Social media has hindered the ability for people to find what truly resonates, and I think this would be a solution. Again, you can see how much I value reflection and think it's missing in today's self-improvement advice.
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+ ## Links to work
+ [My personal AI assistant (tutorial elsewhere on YT channel)](https://www.youtube.com/watch?v=PnOhU7dLNQg)
