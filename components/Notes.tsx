@@ -1,22 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+// Notes.tsx
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { NotesContext } from '../NotesContext';
 
 interface NoteProps {
+  id: string;
   title: string;
   content: string;
-  timeAgo: string;
+  time: Date;
   isFavorite: boolean;
 }
 
-const Note: React.FC<NoteProps> = ({ title, content, timeAgo, isFavorite }) => (
+const Note: React.FC<{ note: NoteProps; onToggleFavorite: () => void }> = ({ note, onToggleFavorite }) => (
   <View style={styles.noteContainer}>
-    <Text style={styles.noteTitle} numberOfLines={1}>{title}</Text>
-    <Text style={styles.noteContent} numberOfLines={3}>{content}</Text>
+    <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
+    <Text style={styles.noteContent} numberOfLines={3}>{note.content}</Text>
     <View style={styles.noteFooter}>
-      <Text style={styles.timeAgo}>{timeAgo}</Text>
+      <Text style={styles.timeAgo}>{formatTimeAgo(note.time)}</Text>
       <View style={styles.noteActions}>
-        <Ionicons name={isFavorite ? "star" : "star-outline"} size={20} color={isFavorite ? "#FFD700" : "#CCCCCC"} />
+        <TouchableOpacity onPress={onToggleFavorite}>
+          <Ionicons
+            name={note.isFavorite ? 'star' : 'star-outline'}
+            size={20}
+            color={note.isFavorite ? '#FFD700' : '#CCCCCC'}
+          />
+        </TouchableOpacity>
         <Ionicons name="ellipsis-horizontal" size={20} color="#000000" style={styles.moreIcon} />
       </View>
     </View>
@@ -24,30 +34,108 @@ const Note: React.FC<NoteProps> = ({ title, content, timeAgo, isFavorite }) => (
 );
 
 const Notes: React.FC = () => {
-  const recentNotes: NoteProps[] = [
-    { title: "Lorem ipsum dolor sit amet", content: "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...", timeAgo: "1 week ago", isFavorite: true },
-    { title: "Note 2", content: "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...", timeAgo: "57 sec ago", isFavorite: false },
-    { title: "Note 3", content: "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...", timeAgo: "57 sec ago", isFavorite: false },
-  ];
+  const { notes, addNote, toggleFavorite } = useContext(NotesContext);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newNoteTitle, setNewNoteTitle] = useState('');
+  const [newNoteContent, setNewNoteContent] = useState('');
+
+  const router = useRouter();
+
+  const handleAddNote = () => {
+    setModalVisible(true);
+  };
+
+  const saveNote = () => {
+    if (newNoteTitle.trim() && newNoteContent.trim()) {
+      const newNote: NoteProps = {
+        id: Date.now().toString(),
+        title: newNoteTitle.trim(),
+        content: newNoteContent.trim(),
+        time: new Date(),
+        isFavorite: false,
+      };
+      addNote(newNote);
+      setNewNoteTitle('');
+      setNewNoteContent('');
+      setModalVisible(false);
+    } else {
+      alert('Please enter both title and content.');
+    }
+  };
+
+  // Sort and limit notes
+  const sortedNotes = notes
+    .sort((a, b) => {
+      if (a.isFavorite !== b.isFavorite) {
+        return a.isFavorite ? -1 : 1;
+      }
+      return b.time.getTime() - a.time.getTime();
+    })
+    .slice(0, 3);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Notes</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('../AllNotes')}>
           <Text style={styles.seeAll}>See all notes</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.notesGrid}>
-        <TouchableOpacity style={styles.addNoteContainer}>
+        <TouchableOpacity style={styles.addNoteContainer} onPress={handleAddNote}>
           <Ionicons name="add" size={40} color="#CCCCCC" />
         </TouchableOpacity>
-        {recentNotes.map((note, index) => (
-          <Note key={index} {...note} />
+        {sortedNotes.map(note => (
+          <Note
+            key={note.id}
+            note={note}
+            onToggleFavorite={() => toggleFavorite(note.id)}
+          />
         ))}
       </View>
+
+      {/* Add Note Modal */}
+      <Modal visible={modalVisible} animationType="slide">
+        <ScrollView contentContainerStyle={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Add Note</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Title"
+            value={newNoteTitle}
+            onChangeText={setNewNoteTitle}
+          />
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Content"
+            value={newNoteContent}
+            onChangeText={setNewNoteContent}
+            multiline
+          />
+          <TouchableOpacity style={styles.saveButton} onPress={saveNote}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </Modal>
     </View>
   );
+};
+
+// Helper function to format time ago
+const formatTimeAgo = (time: Date) => {
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - time.getTime()) / 1000); // in seconds
+
+  if (diff < 60) return `${diff} sec ago`;
+  else if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  else if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+  else if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`;
+  else return time.toLocaleDateString();
 };
 
 const styles = StyleSheet.create({
@@ -91,7 +179,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     justifyContent: 'space-between',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -110,7 +198,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
   },
   timeAgo: {
     fontSize: 12,
@@ -123,7 +210,51 @@ const styles = StyleSheet.create({
   moreIcon: {
     marginLeft: 8,
   },
+  modalContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    flexGrow: 1,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  cancelButton: {
+    alignItems: 'center',
+    padding: 12,
+  },
+  cancelButtonText: {
+    color: '#666666',
+    fontSize: 16,
+  },
 });
 
 export default Notes;
+
 

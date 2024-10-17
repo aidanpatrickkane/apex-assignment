@@ -1,13 +1,16 @@
 import { Stack } from 'expo-router';
 import React from 'react';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { NotesProvider } from '@/NotesContext';
 
 export default function RootLayout() {
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="AudioPlayer" options={{ headerShown: false }} />
-    </Stack>
+   <NotesProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="AudioPlayer" options={{ headerShown: false }} />
+        <Stack.Screen name="AllNotes" options={{ title: 'All Notes' }} />
+      </Stack>
+    </NotesProvider>
   );
 }
